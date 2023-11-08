@@ -50,11 +50,42 @@ def thomas(mat: np.ndarray, b: np.ndarray):
     return x
 
 
-def gauss_seidel(
+def successive_over_relaxation(
     mat: np.ndarray,
     b: np.ndarray,
     x_0: np.ndarray = None,
+    omega: float = 1,
     eps: float = 1e-10,
-    stop_cond=lambda a, b, x: np.linalg.norm(b - np.matmul(a, x)) / np.norm(b),
-):
-    x = np.zeros_like(b) if x_0 is None else x_0
+    stop_cond=lambda a, b, x: np.linalg.norm(b - np.matmul(a, x), 2)
+    / np.linalg.norm(b, None),
+    max_iter: int = 500,
+) -> np.ndarray:
+    assert (
+        0 < omega < 2
+    ), f"Omega out of bounds: {omega} not in (0,2)! SOR will not converge."
+    assert stop_cond is not None, "Stop condition cannot be None"
+
+    x = x_0
+    iter_num = 1
+
+    while stop_cond(mat, b, x) >= eps and iter_num <= max_iter:
+        for i in range(x.shape[0]):
+            alpha = 0
+            beta = 0
+            for j in range(i - 1):
+                alpha += mat[i, j] * x[j]
+            for j in range(i - 1, x.shape[0]):
+                beta += mat[i, j] * x[j]
+            x[i] += omega / mat[i, i] * (b[i] - alpha - beta)
+        print(
+            f"Iteration {iter_num:>2} {'|'} Stop Condition = {stop_cond(mat,b,x):.10f} | X = {x}"
+        )
+
+        iter_num += 1
+
+    if iter_num > max_iter:
+        print("Maximum iterations reached")
+    else:
+        print(f"Solution found on iteration {iter_num}")
+
+    return x
