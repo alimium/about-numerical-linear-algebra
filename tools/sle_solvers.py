@@ -59,6 +59,7 @@ def successive_over_relaxation(
     stop_cond=lambda a, b, x: np.linalg.norm(b - np.matmul(a, x), 2)
     / np.linalg.norm(b, None),
     max_iter: int = 500,
+    verbose: bool = False,
 ) -> np.ndarray:
     assert (
         0 < omega < 2
@@ -77,9 +78,10 @@ def successive_over_relaxation(
             for j in range(i - 1, x.shape[0]):
                 beta += mat[i, j] * x[j]
             x[i] += omega / mat[i, i] * (b[i] - alpha - beta)
-        print(
-            f"Iteration {iter_num:>2} {'|'} Stop Condition = {stop_cond(mat,b,x):.10f} | X = {x}"
-        )
+        if verbose:
+            print(
+                f"Iteration {iter_num:>2} {'|'} Stop Condition = {stop_cond(mat,b,x):.10f} | X = {x}"
+            )
 
         iter_num += 1
 
