@@ -61,6 +61,34 @@ def successive_over_relaxation(
     max_iter: int = 500,
     verbose: bool = False,
 ) -> np.ndarray:
+    """
+    Solve a system of linear equations (Ax=b) using SOR method. Things to consider:
+        - if no initial guess is provided, zero vector will be used.
+        - if no `omega` is provided, Gauss-Seidel method will be used (`omega=1`)
+
+    Parameters
+    ----------
+        mat(numpy.ndarray): coefficient matrix of the SLE
+        b(numpy.ndarray): right hand side of the SLE
+        x_0(numpy.ndarray): initial guess
+        omega(float): omega hyperparameter
+        eps(float): epsilon for error bound
+        stop_cond(function): for calculation of the stop condition
+        max_iter(int): maximum iterations
+        vrebose(bool): whether to print results at each step. good for debugging
+
+    Returns
+    -------
+        x(numpy.ndarray): solution to the SLE
+
+    Notes
+    -----
+        There is no automatic way of opitimizing `omega` yet.
+
+        you need to provide the optimized value yourself but I
+
+        think I will add this functionality soon
+    """
     assert (
         0 < omega < 2
     ), f"Omega out of bounds: {omega} not in (0,2)! SOR will not converge."
