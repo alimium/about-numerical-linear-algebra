@@ -31,3 +31,24 @@ def hilbert(n: int):
     h = calc_func(i_s, j_s)
 
     return h
+
+
+def vandermonde(x):
+    """
+    Generate a Vandermonde matrix based on the given input vector x.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        Input vector.
+
+    Returns
+    -------
+    v : numpy.ndarray
+        Vandermonde matrix.
+
+    """
+    n = len(x)
+    powers = np.arange(n)
+    v = np.column_stack([x**powers])
+    return v
