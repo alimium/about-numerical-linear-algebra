@@ -3,6 +3,19 @@ This module provides several algorithms for solving systems of linear equations.
 """
 
 import numpy as np
+from dataclasses import dataclass
+
+
+class StopCondition:
+    def __init__(self, mode: str):
+        if mode == "absolute":
+            self.f = lambda xn, xt: np.max(np, abs(xn - xt))
+        if mode == "relative":
+            self.f = lambda xn, xt: np.max(np.abs(xn - xt) / np.abs(xt))
+        if mode == "absremainder":
+            self.f = lambda A, b, xk: np.linalg.norm(b - (A @ xk))
+        if mode == "relremainder":
+            self.f = lambda A, b, xk: np.linalg.norm(b - (A @ xk)) / np.linalg.norm(b)
 
 
 def thomas(mat: np.ndarray, b: np.ndarray):
@@ -119,3 +132,32 @@ def successive_over_relaxation(
         print(f"Solution found on iteration {iter_num}")
 
     return x
+
+
+def vectorized_jacobean(
+    coef: np.ndarray,
+    rhs: np.ndarray,
+    x_0: np.ndarray = None,
+    stop_cond: StopCondition = StopCondition("absremainder"),
+    eps: float = 1e-8,
+    max_iter: int = 500,
+):
+    """
+    TODO: REFACTOR THIS FUNCTION TO UTILIZE VECTORIZATION.
+    """
+    x = np.zeros_like(rhs) if x_0 is None else x_0
+
+    def calc_func(A, b, x, stp_cnd, eps, max_iter):
+        d = np.diag(np.diag(A))
+        d_inv = np.linalg.inv(d)
+        lu = A - d
+        m = -d_inv @ lu
+        c = d_inv @ b
+        i = 0
+        while stp_cnd.f(A, b, x) >= eps and i < max_iter:
+            x = m @ x + c
+            i += 1
+        return x
+
+    # calc_func = np.vectorize(calc_func)
+    return calc_func(coef, rhs, x, stop_cond, eps, max_iter)
