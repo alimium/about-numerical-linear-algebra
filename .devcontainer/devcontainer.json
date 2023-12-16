@@ -1,0 +1,11 @@
+{
+    "name": "nla_devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-python.black-formatter"
+    ],
+    "postStartCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+}
